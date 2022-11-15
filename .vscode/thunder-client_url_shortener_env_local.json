@@ -1,0 +1,13 @@
+{
+  "client": "Thunder Client",
+  "environmentName": "local",
+  "dateExported": "2022-11-08T13:55:14.367Z",
+  "version": "1.0",
+  "variables": [
+    { "name": "host", "value": "http://127.0.0.1:8080" },
+    {
+      "name": "access_token",
+      "value": "pBDSFq0MJ98ftaVNUVh38033tZzSYk4bLrxBUlUHt20DUdQRLg"
+    }
+  ]
+}

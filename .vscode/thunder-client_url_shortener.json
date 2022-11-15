@@ -1,0 +1,85 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "url_shortener",
+  "dateExported": "2022-11-08T13:49:45.877Z",
+  "version": "1.1",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "1a9cbf25-579f-4df0-8069-09db99d1c252",
+      "colId": "85531f73-c296-49f2-bb05-db47d06e75b1",
+      "containerId": "",
+      "name": "POST create url",
+      "url": "{{host}}/api/v1/url",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2022-11-07T23:05:46.821Z",
+      "modified": "2022-11-08T13:19:33.055Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"access_token\": \"{{access_token}}\",\n  \"alive_until\": \"2022-12-23T23:23:23Z\",\n  \"is_secured\": true,\n  \"url\": \"https://google.com\"\n}",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "_id": "2a6769b6-7560-4740-b7b1-d444020ee2e1",
+      "colId": "85531f73-c296-49f2-bb05-db47d06e75b1",
+      "containerId": "",
+      "name": "POST get urls by access",
+      "url": "{{host}}/api/v1/url/access/list",
+      "method": "POST",
+      "sortNum": 20000,
+      "created": "2022-11-07T23:32:01.411Z",
+      "modified": "2022-11-08T13:19:38.130Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"access_token\": \"{{access_token}}\"\n}",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "_id": "d54c8c0e-cdf8-492f-a209-4341baccbad2",
+      "colId": "85531f73-c296-49f2-bb05-db47d06e75b1",
+      "containerId": "",
+      "name": "POST get url",
+      "url": "{{host}}/api/v1/url/D9AO1R4GNUSh",
+      "method": "POST",
+      "sortNum": 25000,
+      "created": "2022-11-08T13:33:43.979Z",
+      "modified": "2022-11-08T13:37:27.821Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n\"pin\": \"8576\"\n}",
+        "form": []
+      },
+      "tests": []
+    },
+    {
+      "_id": "738363e8-508a-4b63-96ab-9ebc3a74d883",
+      "colId": "85531f73-c296-49f2-bb05-db47d06e75b1",
+      "containerId": "",
+      "name": "DELETE url by code",
+      "url": "{{host}}/api/v1/url/KoqNKWF7H100",
+      "method": "DELETE",
+      "sortNum": 30000,
+      "created": "2022-11-08T13:20:14.991Z",
+      "modified": "2022-11-08T13:31:51.926Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"access_token\": \"{{access_token}}\"\n}",
+        "form": []
+      },
+      "tests": []
+    }
+  ]
+}

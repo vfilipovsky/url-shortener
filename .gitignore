@@ -1,0 +1,12 @@
+.vscode/*
+!.vscode/thunder-client_url_shortener.json
+!.vscode/thunder-client_url_shortener_env_local.json
+
+.idea
+
+.bin
+.env
+
+vendor
+
+coverage.out
