@@ -10,15 +10,20 @@ import (
 	"github.com/vfilipovsky/url-shortener/pkg/logger"
 )
 
+const driver = "postgres"
+
 func NewInstance(cfg *config.DatabaseCredentials) (*sql.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.User, cfg.Name, cfg.Pass, cfg.SslMode)
 
-	driver := "postgres"
 	conn, err := sql.Open(driver, dsn)
 
 	if err != nil {
+		return nil, err
+	}
+
+	if err := conn.Ping(); err != nil {
 		return nil, err
 	}
 

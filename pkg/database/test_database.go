@@ -52,6 +52,10 @@ func SetupTestDatabase() (*TestDatabase, error) {
 		return nil, err
 	}
 
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+
 	return &TestDatabase{DB: db, URI: URI}, nil
 }
 
