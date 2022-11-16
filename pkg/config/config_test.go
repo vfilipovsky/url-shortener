@@ -48,7 +48,7 @@ func TestInitDatabaseCredentials(t *testing.T) {
 
 func TestInitHttpConfig(t *testing.T) {
 	expected := &Http{
-		Port: "8080",
+		Port: "8085",
 		Host: "127.0.0.1",
 	}
 
@@ -69,7 +69,7 @@ func TestInit(t *testing.T) {
 	}
 
 	httpConfig := &Http{
-		Port: "8080",
+		Port: "8085",
 		Host: "127.0.0.1",
 	}
 
