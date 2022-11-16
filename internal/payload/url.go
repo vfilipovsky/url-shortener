@@ -16,7 +16,7 @@ type DeleteUrl struct {
 
 type GetUrl struct {
 	Code string `json:"code" validate:"required"`
-	Pin  string `json:"pin"`
+	Pin  string `json:"pin" validate:"omitempty"`
 }
 
 type GetUrlsByAccess struct {

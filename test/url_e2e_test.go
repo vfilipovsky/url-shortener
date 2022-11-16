@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/vfilipovsky/url-shortener/internal/entity"
+	"github.com/vfilipovsky/url-shortener/internal/handler"
 	"github.com/vfilipovsky/url-shortener/internal/repository"
 	"github.com/vfilipovsky/url-shortener/internal/server"
 	"github.com/vfilipovsky/url-shortener/pkg/config"
@@ -136,4 +137,163 @@ func (s *urlE2eTestSuite) TestGetUrlsByAccess() {
 
 	s.Equal(2, len(resUrls))
 	s.Equal(http.StatusOK, res.StatusCode)
+}
+
+func (s *urlE2eTestSuite) TestGetPageReturnsVerificationPageIfUrlIsSecured() {
+	id := uuid.Must(uuid.NewUUID())
+	accessID := uuid.Must(uuid.NewUUID())
+
+	access := &entity.Access{
+		ID:       accessID,
+		Token:    "qwerty1234",
+		IsActive: true,
+	}
+
+	url := &entity.Url{
+		ID:        id,
+		Code:      "qwerty",
+		AccessID:  accessID,
+		IsSecured: true,
+	}
+
+	err := s.accessRepository.Create(access)
+	s.Require().NoError(err)
+
+	err = s.urlRepository.Create(url)
+	s.Require().NoError(err)
+
+	r, err := http.NewRequest(http.MethodGet, s.serverUrl+"/qwerty", nil)
+	s.Require().NoError(err)
+
+	client := http.Client{}
+	res, err := client.Do(r)
+	s.Require().NoError(err)
+	defer res.Body.Close()
+
+	s.Equal(http.StatusOK, res.StatusCode)
+	s.Equal(http.MethodGet, res.Request.Method)
+}
+
+func (s *urlE2eTestSuite) TestGetPageRedirectsToUrlIfNotSecured() {
+	id := uuid.Must(uuid.NewUUID())
+	accessID := uuid.Must(uuid.NewUUID())
+
+	access := &entity.Access{
+		ID:       accessID,
+		Token:    "qwerty1234",
+		IsActive: true,
+	}
+
+	url := &entity.Url{
+		ID:        id,
+		Code:      "qwerty",
+		AccessID:  accessID,
+		IsSecured: false,
+		Url:       "https://www.google.com/",
+	}
+
+	err := s.accessRepository.Create(access)
+	s.Require().NoError(err)
+
+	err = s.urlRepository.Create(url)
+	s.Require().NoError(err)
+
+	r, err := http.NewRequest(http.MethodGet, s.serverUrl+"/qwerty", nil)
+	s.Require().NoError(err)
+
+	client := http.Client{}
+	res, err := client.Do(r)
+	s.Require().NoError(err)
+	defer res.Body.Close()
+
+	s.Equal(http.StatusOK, res.StatusCode)
+	s.Equal(url.Url, res.Request.URL.String())
+}
+
+func (s *urlE2eTestSuite) TestGetUrlReturnsSecuredUrlByPinInPostBody() {
+	id := uuid.Must(uuid.NewUUID())
+	accessID := uuid.Must(uuid.NewUUID())
+
+	access := &entity.Access{
+		ID:       accessID,
+		Token:    "qwerty1234",
+		IsActive: true,
+	}
+
+	url := &entity.Url{
+		ID:        id,
+		Code:      "qwerty",
+		AccessID:  accessID,
+		Pin:       "1234",
+		IsSecured: true,
+		Url:       "https://www.google.com/",
+	}
+
+	err := s.accessRepository.Create(access)
+	s.Require().NoError(err)
+
+	err = s.urlRepository.Create(url)
+	s.Require().NoError(err)
+
+	r, err := http.NewRequest(
+		http.MethodPost,
+		s.serverUrl+handler.V1Url+"/qwerty",
+		strings.NewReader(`{"pin":"1234"}`),
+	)
+
+	s.Require().NoError(err)
+
+	client := http.Client{}
+	res, err := client.Do(r)
+	s.Require().NoError(err)
+	defer res.Body.Close()
+
+	var result string
+	err = json.NewDecoder(res.Body).Decode(&result)
+	s.NoError(err)
+
+	s.Equal(http.StatusOK, res.StatusCode)
+	s.Equal(url.Url, result)
+}
+
+func (s *urlE2eTestSuite) TestGetUrlReturnsUnsecuredUrl() {
+	id := uuid.Must(uuid.NewUUID())
+	accessID := uuid.Must(uuid.NewUUID())
+
+	access := &entity.Access{
+		ID:       accessID,
+		Token:    "qwerty1234",
+		IsActive: true,
+	}
+
+	url := &entity.Url{
+		ID:        id,
+		Code:      "qwerty",
+		AccessID:  accessID,
+		Pin:       "1234",
+		IsSecured: false,
+		Url:       "https://www.google.com/",
+	}
+
+	err := s.accessRepository.Create(access)
+	s.Require().NoError(err)
+
+	err = s.urlRepository.Create(url)
+	s.Require().NoError(err)
+
+	r, err := http.NewRequest(http.MethodGet, s.serverUrl+handler.V1Url+"/qwerty", nil)
+
+	s.Require().NoError(err)
+
+	client := http.Client{}
+	res, err := client.Do(r)
+	s.Require().NoError(err)
+	defer res.Body.Close()
+
+	var result string
+	err = json.NewDecoder(res.Body).Decode(&result)
+	s.NoError(err)
+
+	s.Equal(http.StatusOK, res.StatusCode)
+	s.Equal(url.Url, result)
 }

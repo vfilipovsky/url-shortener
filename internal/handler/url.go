@@ -64,7 +64,7 @@ func RegisterUrlRoutes(
 
 	r.HandleFunc(V1Url, h.Create).Methods(http.MethodPost)
 	r.HandleFunc(V1Url+"/{code}", h.Delete).Methods(http.MethodDelete)
-	r.HandleFunc(V1Url+"/{code}", h.GetUrl).Methods(http.MethodPost)
+	r.HandleFunc(V1Url+"/{code}", h.GetUrl).Methods(http.MethodPost, http.MethodGet)
 	r.HandleFunc(V1Url+"/access/list", h.GetUrlsByAccess).Methods(http.MethodPost)
 	r.HandleFunc("/{code}", h.GetPage).Methods(http.MethodGet)
 }
@@ -140,9 +140,16 @@ func (h *urlHandler) GetPage(w http.ResponseWriter, r *http.Request) {
 func (h *urlHandler) GetUrl(w http.ResponseWriter, r *http.Request) {
 	pl := &payload.GetUrl{Code: mux.Vars(r)["code"]}
 
-	if err := api.DecodeAndValidate(r.Body, pl); err != nil {
-		api.Respond(w, err)
-		return
+	if r.Method == http.MethodPost {
+		if err := api.DecodeAndValidate(r.Body, pl); err != nil {
+			api.Respond(w, err)
+			return
+		}
+	} else {
+		if err := api.ValidateRequestPayload(pl); err != nil {
+			api.Respond(w, err)
+			return
+		}
 	}
 
 	url, err := h.getUrlAction.Run(pl.Pin, pl.Code)

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"os"
+	"strings"
 
 	"github.com/vfilipovsky/url-shortener/pkg/logger"
 )
@@ -20,5 +21,5 @@ func GetPublicDir() string {
 		return ""
 	}
 
-	return dir + "/public"
+	return strings.Replace(dir+"/public", "test", "", 1)
 }

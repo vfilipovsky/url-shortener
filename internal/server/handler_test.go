@@ -1,9 +1,9 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,9 +16,10 @@ func TestPing(t *testing.T) {
 
 	ping(w, r)
 
-	res := w.Result()
-	defer res.Body.Close()
+	var result string
+	err := json.NewDecoder(w.Result().Body).Decode(&result)
+	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "\"pong\"", strings.TrimSpace(w.Body.String()))
+	assert.Equal(t, "pong", result)
 }
