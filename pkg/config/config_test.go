@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/joho/godotenv"
@@ -17,7 +18,7 @@ func TestMain(m *testing.M) {
 		panic(fmt.Sprintf("'%s' file not found", filePath))
 	}
 
-	m.Run()
+	os.Exit(m.Run())
 }
 
 func TestInitLoggerConfig(t *testing.T) {

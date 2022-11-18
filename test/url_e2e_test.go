@@ -297,3 +297,81 @@ func (s *urlE2eTestSuite) TestGetUrlReturnsUnsecuredUrl() {
 	s.Equal(http.StatusOK, res.StatusCode)
 	s.Equal(url.Url, result)
 }
+
+func (s *urlE2eTestSuite) TestCreateReturnsNewUrl() {
+	accessID := uuid.Must(uuid.NewUUID())
+
+	access := &entity.Access{
+		ID:       accessID,
+		Token:    "qwerty1234",
+		IsActive: true,
+	}
+
+	err := s.accessRepository.Create(access)
+	s.Require().NoError(err)
+
+	reader := strings.NewReader(`{
+		"access_token": "qwerty1234",
+		"alive_until": "2023-12-23T23:23:23Z",
+		"is_secured": true,
+		"url": "https://google.com"
+	  }`)
+
+	r, err := http.NewRequest(http.MethodPost, s.serverUrl+handler.V1Url, reader)
+
+	s.Require().NoError(err)
+
+	client := http.Client{}
+	res, err := client.Do(r)
+	s.Require().NoError(err)
+	defer res.Body.Close()
+
+	var url entity.Url
+	err = json.NewDecoder(res.Body).Decode(&url)
+	s.NoError(err)
+
+	s.Equal(http.StatusOK, res.StatusCode)
+	s.Equal("https://google.com", url.Url)
+	s.Equal(true, url.IsSecured)
+	s.Equal(true, len(url.Code) > 0)
+	s.Equal(true, len(url.Pin) > 0)
+}
+
+func (s *urlE2eTestSuite) TestDelete() {
+	id := uuid.Must(uuid.NewUUID())
+	accessID := uuid.Must(uuid.NewUUID())
+
+	access := &entity.Access{
+		ID:       accessID,
+		Token:    "qwerty1234",
+		IsActive: true,
+	}
+
+	url := &entity.Url{
+		ID:        id,
+		Code:      "qwerty",
+		AccessID:  accessID,
+		Pin:       "1234",
+		IsSecured: false,
+		Url:       "https://www.google.com/",
+	}
+
+	err := s.accessRepository.Create(access)
+	s.Require().NoError(err)
+
+	err = s.urlRepository.Create(url)
+	s.Require().NoError(err)
+
+	reader := strings.NewReader(`{"access_token":"qwerty1234"}`)
+
+	r, err := http.NewRequest(http.MethodDelete, s.serverUrl+handler.V1Url+"/qwerty", reader)
+
+	s.Require().NoError(err)
+
+	client := http.Client{}
+	res, err := client.Do(r)
+	s.Require().NoError(err)
+	defer res.Body.Close()
+
+	s.Equal(http.StatusOK, res.StatusCode)
+}
