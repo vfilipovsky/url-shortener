@@ -1,5 +1,7 @@
 package url
 
+//go:generate mockgen -source=./get_all_urls_by_access.go -destination=./mock/mock_get_all_urls_by_access.go
+
 import (
 	"github.com/vfilipovsky/url-shortener/internal/entity"
 	"github.com/vfilipovsky/url-shortener/internal/service"

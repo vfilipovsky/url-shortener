@@ -1,5 +1,7 @@
 package url
 
+//go:generate mockgen -source=./delete_url.go -destination=./mock/mock_delete_url.go
+
 import (
 	"github.com/vfilipovsky/url-shortener/internal/service"
 	"github.com/vfilipovsky/url-shortener/pkg/exception"

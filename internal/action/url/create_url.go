@@ -1,5 +1,7 @@
 package url
 
+//go:generate mockgen -source=./create_url.go -destination=./mock/mock_create_url.go
+
 import (
 	"time"
 

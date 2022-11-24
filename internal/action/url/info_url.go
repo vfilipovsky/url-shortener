@@ -1,5 +1,7 @@
 package url
 
+//go:generate mockgen -source=./info_url.go -destination=./mock/mock_info_url.go
+
 import (
 	"fmt"
 

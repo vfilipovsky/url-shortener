@@ -170,7 +170,7 @@ func (h *urlHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url, err := h.createUrlAction.Run(pl.AccessToken, pl.Url, pl.IsSecured, pl.AliveUntil)
+	url, err := h.createUrlAction.Run(pl.AccessToken, pl.Url, *pl.IsSecured, pl.AliveUntil)
 
 	if err != nil {
 		api.Respond(w, err)

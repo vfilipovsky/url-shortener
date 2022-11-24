@@ -6,7 +6,7 @@ type CreateUrl struct {
 	AccessToken string    `json:"access_token" validate:"required"`
 	Url         string    `json:"url" validate:"required"`
 	AliveUntil  time.Time `json:"alive_until" validate:"required"`
-	IsSecured   bool      `json:"is_secured" validate:"required"`
+	IsSecured   *bool     `json:"is_secured" validate:"required"`
 }
 
 type DeleteUrl struct {

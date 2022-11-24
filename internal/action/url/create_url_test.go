@@ -31,17 +31,18 @@ func TestSuccessCreate(t *testing.T) {
 		IsActive: true,
 	}
 
+	boolTrue := true
 	pl := &payload.CreateUrl{
 		AccessToken: accessToken,
 		Url:         "https://google.com",
 		AliveUntil:  time.Now().Add(time.Duration(time.Now().Weekday())),
-		IsSecured:   true,
+		IsSecured:   &boolTrue,
 	}
 
 	newUrl := &entity.Url{
 		Url:        pl.Url,
 		AliveUntil: pl.AliveUntil,
-		IsSecured:  pl.IsSecured,
+		IsSecured:  *pl.IsSecured,
 		AccessID:   access.ID,
 		Code:       "qwe1234",
 		Pin:        "1234",
@@ -63,7 +64,7 @@ func TestSuccessCreate(t *testing.T) {
 		tokenizer:     tokenizer,
 	}
 
-	actual, err := create.Run(pl.AccessToken, pl.Url, pl.IsSecured, pl.AliveUntil)
+	actual, err := create.Run(pl.AccessToken, pl.Url, *pl.IsSecured, pl.AliveUntil)
 
 	assert.Nil(t, err)
 	assert.Equal(t, actual.AccessID, newUrl.AccessID)
@@ -74,11 +75,13 @@ func TestAccessRestrictedDueToInvalidAccessToken(t *testing.T) {
 	accessService := mockService.NewMockAccess(ctrl)
 
 	accessToken := "zcgt2Q0s4U4F2MP0Zhxosq3xzqhvv4elZUaOF8wnWuqMwrmCWq"
+
+	boolTrue := true
 	pl := &payload.CreateUrl{
 		AccessToken: accessToken,
 		Url:         "https://google.com",
 		AliveUntil:  time.Now().Add(time.Duration(time.Now().Weekday())),
-		IsSecured:   true,
+		IsSecured:   &boolTrue,
 	}
 
 	accessService.EXPECT().GetByToken(accessToken).Return(nil, nil)
@@ -86,7 +89,7 @@ func TestAccessRestrictedDueToInvalidAccessToken(t *testing.T) {
 	create := &createAction{accessService: accessService}
 
 	expectedErr := exception.AccessRestricted
-	actual, err := create.Run(pl.AccessToken, pl.Url, pl.IsSecured, pl.AliveUntil)
+	actual, err := create.Run(pl.AccessToken, pl.Url, *pl.IsSecured, pl.AliveUntil)
 
 	assert.Nil(t, actual)
 	assert.ErrorIs(t, expectedErr, err)
@@ -103,11 +106,12 @@ func TestAccessRestrictedDueToAccessNotActive(t *testing.T) {
 		Token:    accessToken,
 	}
 
+	boolTrue := true
 	pl := &payload.CreateUrl{
 		AccessToken: accessToken,
 		Url:         "https://google.com",
 		AliveUntil:  time.Now().Add(time.Duration(time.Now().Weekday())),
-		IsSecured:   true,
+		IsSecured:   &boolTrue,
 	}
 
 	accessService.EXPECT().GetByToken(accessToken).Return(access, nil)
@@ -115,7 +119,7 @@ func TestAccessRestrictedDueToAccessNotActive(t *testing.T) {
 	create := &createAction{accessService: accessService}
 
 	expectedErr := exception.AccessRestricted
-	actual, err := create.Run(pl.AccessToken, pl.Url, pl.IsSecured, pl.AliveUntil)
+	actual, err := create.Run(pl.AccessToken, pl.Url, *pl.IsSecured, pl.AliveUntil)
 
 	assert.Nil(t, actual)
 	assert.ErrorIs(t, expectedErr, err)
